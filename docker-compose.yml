@@ -1,10 +1,9 @@
-# Um comando sobe tudo. Sem --profile, sobe o demo (dados fictícios).
-# Uso real da Sir Tech: docker compose --profile real up -d --build
+# Demonstração: dados fictícios e login de demonstração. Um comando sobe tudo:
+#   docker compose up -d --build
+# O uso real da empresa fica em outro arquivo, com outro banco: docker-compose.real.yml
 #
 # As portas escutam só em 127.0.0.1: o sistema abre neste computador e não aparece
 # para outras máquinas da mesma rede (Wi-Fi de café, coworking).
-# O perfil real usa REAL_POSTGRES_PASSWORD, sem valor padrão: sem essa senha no .env,
-# o PostgreSQL se recusa a criar o banco real.
 services:
   db:
     image: postgres:18
@@ -17,24 +16,6 @@ services:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata-demo:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sirtech} -d ${POSTGRES_DB:-sirtech}"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  db-real:
-    image: postgres:18
-    container_name: sirtech-db-real
-    profiles: ["real"]
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
-      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
-      POSTGRES_PASSWORD: ${REAL_POSTGRES_PASSWORD:-}
-    ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - pgdata-real:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sirtech} -d ${POSTGRES_DB:-sirtech}"]
       interval: 5s
@@ -59,25 +40,6 @@ services:
     volumes:
       - ./backups:/app/backups
 
-  api-real:
-    build: ./backend
-    container_name: sirtech-api-real
-    profiles: ["real"]
-    depends_on:
-      db-real:
-        condition: service_healthy
-    environment:
-      DB_HOST: db-real
-      DB_PORT: 5432
-      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
-      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
-      POSTGRES_PASSWORD: ${REAL_POSTGRES_PASSWORD:-}
-      SIRTECH_CNPJ: ${SIRTECH_CNPJ:-}
-    ports:
-      - "127.0.0.1:8080:8080"
-    volumes:
-      - ./backups:/app/backups
-
   web:
     build: ./frontend
     container_name: sirtech-web
@@ -86,15 +48,5 @@ services:
     ports:
       - "127.0.0.1:4200:80"
 
-  web-real:
-    build: ./frontend
-    container_name: sirtech-web-real
-    profiles: ["real"]
-    depends_on:
-      - api-real
-    ports:
-      - "127.0.0.1:4200:80"
-
 volumes:
   pgdata-demo:
-  pgdata-real:

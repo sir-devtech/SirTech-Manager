@@ -1,0 +1,57 @@
+# Uso real da Sir Tech: sem dados de exemplo, banco e projeto separados da demonstração.
+#   docker compose -f docker-compose.real.yml up -d --build
+#
+# Antes, copie .env.example para .env e preencha REAL_POSTGRES_PASSWORD,
+# SIRTECH_ADMIN_EMAIL e SIRTECH_ADMIN_SENHA. Sem eles, o Compose nem começa.
+# Pare a demonstração antes (docker compose down): as portas são as mesmas.
+name: sirtech-real
+
+services:
+  db:
+    image: postgres:18
+    container_name: sirtech-real-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
+      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
+      POSTGRES_PASSWORD: ${REAL_POSTGRES_PASSWORD:?Defina REAL_POSTGRES_PASSWORD no .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata-real:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sirtech} -d ${POSTGRES_DB:-sirtech}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    container_name: sirtech-real-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
+      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
+      POSTGRES_PASSWORD: ${REAL_POSTGRES_PASSWORD:?Defina REAL_POSTGRES_PASSWORD no .env}
+      SIRTECH_CNPJ: ${SIRTECH_CNPJ:-}
+      SIRTECH_ADMIN_NOME: ${SIRTECH_ADMIN_NOME:-}
+      SIRTECH_ADMIN_EMAIL: ${SIRTECH_ADMIN_EMAIL:?Defina SIRTECH_ADMIN_EMAIL no .env}
+      SIRTECH_ADMIN_SENHA: ${SIRTECH_ADMIN_SENHA:?Defina SIRTECH_ADMIN_SENHA no .env}
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./backups:/app/backups
+
+  web:
+    build: ./frontend
+    container_name: sirtech-real-web
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:4200:80"
+
+volumes:
+  pgdata-real:
