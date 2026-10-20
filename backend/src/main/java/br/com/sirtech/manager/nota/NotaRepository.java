@@ -39,6 +39,23 @@ public interface NotaRepository extends JpaRepository<NotaFiscal, Long>, JpaSpec
         });
     }
 
+    @Query("""
+            select nota from NotaFiscal nota
+            join fetch nota.cliente
+            where nota.competencia >= :inicio and nota.competencia <= :fim
+            order by nota.competencia, nota.id
+            """)
+    List<NotaFiscal> noPeriodo(@Param("inicio") YearMonth inicio, @Param("fim") YearMonth fim);
+
+    /** Emitida e ainda não paga. A faixa de atraso olha estas, independente do período. */
+    @Query("""
+            select nota from NotaFiscal nota
+            join fetch nota.cliente
+            where nota.status = br.com.sirtech.manager.nota.StatusNota.EMITIDA
+            order by nota.dataVencimento
+            """)
+    List<NotaFiscal> emitidasEmAberto();
+
     /** Insere a nota pendente. Se já existe uma ativa naquele mês, não faz nada e devolve 0. */
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """

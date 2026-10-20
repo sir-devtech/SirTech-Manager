@@ -71,6 +71,46 @@ export interface Resumo {
   notasVencidas: number;
 }
 
+export interface Fatia {
+  chave: string;
+  nome: string;
+  valor: number;
+  parte: number;
+}
+
+export interface MesFinanceiro {
+  competencia: string;
+  receitaPrevista: number;
+  receitaRecebida: number;
+  totalDespesas: number;
+}
+
+export interface FaixaAtraso {
+  aVencer: number;
+  valorAVencer: number;
+  ate30: number;
+  valorAte30: number;
+  de31a60: number;
+  valorDe31a60: number;
+  acimaDe60: number;
+  valorAcimaDe60: number;
+}
+
+export interface Financeiro {
+  inicio: string;
+  fim: string;
+  receitaPrevista: number;
+  receitaRecebida: number;
+  totalDespesas: number;
+  lucroPrevisto: number;
+  lucroRealizado: number;
+  meses: MesFinanceiro[];
+  porCliente: Fatia[];
+  porProduto: Fatia[];
+  porCategoria: Fatia[];
+  atraso: FaixaAtraso;
+}
+
 export interface ResultadoGeracao {
   notasCriadas: number;
   despesasReplicadas: number;

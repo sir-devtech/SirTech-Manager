@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
@@ -86,5 +86,21 @@ class FluxoCompletoIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.lucroRealizado").value(-150.10))
                 .andExpect(jsonPath("$.notasPendentesEmissao").value(0))
                 .andExpect(jsonPath("$.notasVencidas").value(0));
+
+        mockMvc.perform(get("/api/financeiro").param("inicio", "2026-10").param("fim", "2026-10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.receitaPrevista").value(199.90))
+                .andExpect(jsonPath("$.receitaRecebida").value(199.90))
+                .andExpect(jsonPath("$.totalDespesas").value(350.00))
+                .andExpect(jsonPath("$.lucroRealizado").value(-150.10))
+                .andExpect(jsonPath("$.porCliente[0].chave").isNotEmpty())
+                .andExpect(jsonPath("$.porProduto[0].chave").value("SIR_BARBER"))
+                .andExpect(jsonPath("$.porCategoria[0].chave").value("CONTADOR"));
+    }
+
+    @Test
+    void financeiroRecusaPeriodoInvertido() throws Exception {
+        mockMvc.perform(get("/api/financeiro").param("inicio", "2026-10").param("fim", "2026-01"))
+                .andExpect(status().isUnprocessableContent());
     }
 }

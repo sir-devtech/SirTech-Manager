@@ -13,6 +13,13 @@ public interface DespesaRepository extends JpaRepository<Despesa, Long> {
 
     List<Despesa> findByCompetenciaOrderByDescricaoAsc(YearMonth competencia);
 
+    @Query("""
+            select despesa from Despesa despesa
+            where despesa.competencia >= :inicio and despesa.competencia <= :fim
+            order by despesa.competencia, despesa.descricao
+            """)
+    List<Despesa> noPeriodo(@Param("inicio") YearMonth inicio, @Param("fim") YearMonth fim);
+
     List<Despesa> findAllByOrderByCompetenciaDescDescricaoAsc();
 
     @Query(value = """

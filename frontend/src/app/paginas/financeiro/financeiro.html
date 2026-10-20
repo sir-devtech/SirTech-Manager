@@ -1,0 +1,156 @@
+<div class="cabecalho-pagina">
+  <div>
+    <h1>Financeiro</h1>
+    <p class="frase">Leitura de um período. Nada é cadastrado aqui.</p>
+    <div class="filtros" role="group" aria-label="Período">
+    <button type="button" [class.ativo]="atalho() === 'mes'" (click)="escolher('mes')">Este mês</button>
+    <button type="button" [class.ativo]="atalho() === 'anterior'" (click)="escolher('anterior')">
+      Mês anterior
+    </button>
+    <button type="button" [class.ativo]="atalho() === 'ano'" (click)="escolher('ano')">Este ano</button>
+    <label>
+      De
+      <input type="month" [value]="inicio()" (change)="inicio.set($any($event.target).value)" />
+    </label>
+    <label>
+      Até
+      <input type="month" [value]="fim()" (change)="fim.set($any($event.target).value)" />
+    </label>
+    <button type="button" class="aplicar" (click)="aplicarIntervalo()">Aplicar</button>
+    </div>
+  </div>
+  <app-leitura [resumo]="textoLeitura()">
+    <li>Escolha o período. Os filtros mudam só esta tela.</li>
+    <li>A barra mostra a parte de cada cliente, produto e despesa.</li>
+    <li>O que está parado não segue o período.</li>
+  </app-leitura>
+</div>
+
+@if (inicio() > fim()) {
+  <p class="aviso">O início não pode ser depois do fim.</p>
+}
+
+@if (dados(); as dados) {
+  @if (concentrado()) {
+    <p class="aviso">
+      <mat-icon>warning</mat-icon>
+      Um cliente concentra mais da metade da receita prevista deste período.
+    </p>
+  }
+
+  <section class="faixa-numeros">
+    <p><span>Previsto</span><strong class="previsto">{{ dados.receitaPrevista | currency: 'BRL' }}</strong></p>
+    <p><span>Recebido</span><strong class="recebido">{{ dados.receitaRecebida | currency: 'BRL' }}</strong></p>
+    <p><span>Despesas</span><strong class="despesas">{{ dados.totalDespesas | currency: 'BRL' }}</strong></p>
+    <p>
+      <span>Lucro do que entrou</span>
+      <strong [class.negativo]="dados.lucroRealizado < 0" [class.positivo]="dados.lucroRealizado >= 0">
+        {{ dados.lucroRealizado | currency: 'BRL' }}
+      </strong>
+    </p>
+  </section>
+
+  @if (dados.meses.length > 1) {
+  <section class="grafico">
+    <header>
+      <h2>Mês a mês</h2>
+      <ul class="legenda">
+        <li class="previsto">Previsto</li>
+        <li class="recebido">Recebido</li>
+        <li class="despesas">Despesas</li>
+      </ul>
+    </header>
+    <div class="meses">
+      @for (mes of dados.meses; track mes.competencia) {
+        <div class="mes" [class.atual]="mes.competencia === inicio() && inicio() === fim()">
+          <div class="barras">
+            <i class="previsto" [style.height]="altura(mes.receitaPrevista)" [title]="'Previsto ' + (mes.receitaPrevista | currency: 'BRL')"></i>
+            <i class="recebido" [style.height]="altura(mes.receitaRecebida)" [title]="'Recebido ' + (mes.receitaRecebida | currency: 'BRL')"></i>
+            <i class="despesas" [style.height]="altura(mes.totalDespesas)" [title]="'Despesas ' + (mes.totalDespesas | currency: 'BRL')"></i>
+          </div>
+          <span>{{ rotuloMes(mes.competencia) }}</span>
+        </div>
+      }
+    </div>
+  </section>
+  }
+
+  <section class="leitura">
+    <h2>Por cliente</h2>
+    @if (dados.porCliente.length === 0) {
+      <p class="vazio">Nada neste período.</p>
+    } @else {
+      <ul>
+        @for (fatia of dados.porCliente; track fatia.chave) {
+          <li [class.alerta]="fatia.parte > 0.5">
+            <span>{{ nomeCliente(fatia) }}</span>
+            <div class="trilha"><i [style.width.%]="fatia.parte * 100"></i></div>
+            <strong>{{ fatia.valor | currency: 'BRL' }}</strong>
+            <small>{{ fatia.parte | percent: '1.0-0' }}</small>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="leitura">
+    <h2>Por produto</h2>
+    @if (dados.porProduto.length === 0) {
+      <p class="vazio">Nada neste período.</p>
+    } @else {
+      <ul>
+        @for (fatia of dados.porProduto; track fatia.chave) {
+          <li>
+            <span>{{ nomeProduto(fatia) }}</span>
+            <div class="trilha"><i [style.width.%]="fatia.parte * 100"></i></div>
+            <strong>{{ fatia.valor | currency: 'BRL' }}</strong>
+            <small>{{ fatia.parte | percent: '1.0-0' }}</small>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="leitura saida">
+    <h2>Por despesa</h2>
+    @if (dados.porCategoria.length === 0) {
+      <p class="vazio">Nada neste período.</p>
+    } @else {
+      <ul>
+        @for (fatia of dados.porCategoria; track fatia.chave) {
+          <li>
+            <span>{{ nomeCategoria(fatia) }}</span>
+            <div class="trilha"><i [style.width.%]="fatia.parte * 100"></i></div>
+            <strong>{{ fatia.valor | currency: 'BRL' }}</strong>
+            <small>{{ fatia.parte | percent: '1.0-0' }}</small>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="atraso">
+    <h2>O que está parado agora</h2>
+    <p class="nota">Notas emitidas e ainda não pagas. Não muda com o período de cima.</p>
+    @if (semAtraso(dados)) {
+      <p class="nota">Nenhuma nota emitida em aberto.</p>
+    } @else {
+    <div class="regua">
+      <i class="vencer" [style.flex]="dados.atraso.valorAVencer || 0"></i>
+      <i class="ate30" [style.flex]="dados.atraso.valorAte30 || 0"></i>
+      <i class="ate60" [style.flex]="dados.atraso.valorDe31a60 || 0"></i>
+      <i class="alem" [style.flex]="dados.atraso.valorAcimaDe60 || 0"></i>
+    </div>
+    <ul class="marcos">
+      <li><i class="vencer"></i>A vencer<strong>{{ dados.atraso.valorAVencer | currency: 'BRL' }}</strong></li>
+      <li><i class="ate30"></i>Até 30 dias<strong>{{ dados.atraso.valorAte30 | currency: 'BRL' }}</strong></li>
+      <li><i class="ate60"></i>De 31 a 60<strong>{{ dados.atraso.valorDe31a60 | currency: 'BRL' }}</strong></li>
+      <li><i class="alem"></i>Mais de 60<strong>{{ dados.atraso.valorAcimaDe60 | currency: 'BRL' }}</strong></li>
+    </ul>
+    }
+  </section>
+} @else if (carregou()) {
+  <p class="vazio">Não foi possível carregar o período.</p>
+} @else {
+  <p class="vazio">Carregando…</p>
+}
