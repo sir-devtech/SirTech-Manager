@@ -13,7 +13,7 @@ import java.time.YearMonth;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -87,6 +87,32 @@ class GeracaoMensalIT extends AbstractIntegrationTest {
                     assertThat(despesa.isRecorrente()).isTrue();
                     assertThat(despesa.getValor()).isEqualByComparingTo("350.00");
                 });
+    }
+
+    @Test
+    void recorrenteCopiaOValorEAvulsaNaoPassaParaOMesSeguinte() {
+        clientes.saveAndFlush(cliente("Barbearia X", "11222333000181", true, 10, "199.90"));
+        despesas.saveAndFlush(new Despesa(
+                "Servidor DigitalOcean (demo)", CategoriaDespesa.SERVIDOR,
+                new BigDecimal("150.00"), YearMonth.of(2026, 9), true));
+        despesas.saveAndFlush(new Despesa(
+                "Simples Nacional (demo)", CategoriaDespesa.IMPOSTO,
+                new BigDecimal("90.00"), YearMonth.of(2026, 9), false));
+
+        ResultadoGeracao resultado = service.gerar(YearMonth.of(2026, 10));
+        service.gerar(YearMonth.of(2026, 10));
+
+        assertThat(resultado.despesasReplicadas()).isEqualTo(1);
+        assertThat(despesas.findByCompetenciaOrderByDescricaoAsc(YearMonth.of(2026, 10)))
+                .singleElement()
+                .satisfies(despesa -> {
+                    assertThat(despesa.getDescricao()).isEqualTo("Servidor DigitalOcean (demo)");
+                    assertThat(despesa.getValor()).isEqualByComparingTo("150.00");
+                    assertThat(despesa.isRecorrente()).isTrue();
+                });
+        assertThat(despesas.findByCompetenciaOrderByDescricaoAsc(YearMonth.of(2026, 9)))
+                .extracting(Despesa::getCategoria)
+                .containsExactlyInAnyOrder(CategoriaDespesa.SERVIDOR, CategoriaDespesa.IMPOSTO);
     }
 
     @Test
