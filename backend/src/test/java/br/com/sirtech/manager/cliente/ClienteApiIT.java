@@ -3,6 +3,7 @@ package br.com.sirtech.manager.cliente;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,5 +70,27 @@ class ClienteApiIT extends AbstractIntegrationTest {
 
     private ResultActions criar(String json) throws Exception {
         return mockMvc.perform(post("/api/clientes").contentType(MediaType.APPLICATION_JSON).content(json));
+    }
+
+    @Test
+    void editarOClienteAtualizaANotaPendenteNaMesmaTransacao() throws Exception {
+        String location = criar(BARBEARIA).andReturn().getResponse().getHeader("Location");
+        String clienteId = location.substring(location.lastIndexOf('/') + 1);
+        String notaLocation = mockMvc.perform(post("/api/notas").contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"clienteId":%s,"competencia":"2026-10"}
+                                """.formatted(clienteId)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getHeader("Location");
+
+        mockMvc.perform(put(location).contentType(MediaType.APPLICATION_JSON).content("""
+                        {"nome":"Barbearia X","documento":"11.222.333/0001-81","email":"x@barbearia.example",
+                         "produto":"SIR_BARBER","valorMensal":250.00,"diaVencimento":5}
+                        """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get(notaLocation))
+                .andExpect(jsonPath("$.valor").value(250.00))
+                .andExpect(jsonPath("$.dataVencimento").value("2026-10-05"));
     }
 }

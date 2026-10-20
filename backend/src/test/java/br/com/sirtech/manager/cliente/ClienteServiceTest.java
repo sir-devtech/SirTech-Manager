@@ -19,10 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import br.com.sirtech.manager.cliente.dto.ClienteRequest;
 import br.com.sirtech.manager.cliente.dto.ClienteResponse;
-import br.com.sirtech.manager.nota.NotaService;
 import br.com.sirtech.manager.shared.excecao.RecursoNaoEncontradoException;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,13 +35,13 @@ class ClienteServiceTest {
     private ClienteRepository repository;
 
     @Mock
-    private NotaService notas;
+    private ApplicationEventPublisher eventos;
 
     private ClienteService service;
 
     @BeforeEach
     void setUp() {
-        service = new ClienteService(repository, CLOCK, notas);
+        service = new ClienteService(repository, CLOCK, eventos);
     }
 
     @Test
@@ -80,5 +80,17 @@ class ClienteServiceTest {
         ClienteResponse ativado = service.ativar(1L);
         assertThat(ativado.ativo()).isTrue();
         assertThat(ativado.nome()).isEqualTo("Pet Y");
+    }
+
+    @Test
+    void atualizarAvisaQueOClienteMudouSemConhecerAsNotas() {
+        Cliente cliente = new Cliente("Pet Y", "11444777000161", null, Produto.SIR_PET,
+                new BigDecimal("249.90"), 15, LocalDateTime.now(CLOCK));
+        when(repository.findById(1L)).thenReturn(Optional.of(cliente));
+
+        service.atualizar(1L, new ClienteRequest("Pet Y", "11444777000161", null,
+                Produto.SIR_PET, new BigDecimal("280.00"), 5));
+
+        verify(eventos).publishEvent(new ClienteAlterado(cliente));
     }
 }

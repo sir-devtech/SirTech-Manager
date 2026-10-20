@@ -53,6 +53,7 @@ Sem essas variáveis o comando nem começa. As portas 4200, 8080 e 5432 atendem 
 ## Decisões
 
 - **Regra de status na entidade.** `NotaFiscal.emitir`, `pagar` e `cancelar` consultam `StatusNota.podeTransicionarPara`. O controller não decide transição. Uma nota paga não volta atrás.
+- **Módulos sem ciclo.** Ao editar um cliente, o `ClienteService` publica um evento e `nota/RealinhamentoDeNotas` ajusta as notas pendentes, na mesma transação. Antes isso era uma dependência circular escondida por `@Lazy` (ADR 0010).
 - **Idempotência garantida pelo banco.** Um índice único parcial permite uma nota ativa por cliente em cada mês. A geração usa `INSERT ... ON CONFLICT DO NOTHING`, então rodar duas vezes não duplica. A nota cancelada fica fora do índice.
 - **Geração no dia 1 e na inicialização.** Se a máquina ficou desligada, abrir o sistema põe o mês em dia e copia as despesas recorrentes do último mês que as tinha.
 - **Dinheiro em `BigDecimal`.** A coluna é `numeric`. Centavo não passa por ponto flutuante.
@@ -71,7 +72,7 @@ cd backend && ./mvnw verify
 cd frontend && npm ci && npx ng test --watch=false && npx ng build
 ```
 
-O `mvn verify` roda 107 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 33 testes com Vitest. Os dois rodam no GitHub Actions a cada push, junto com o build de produção.
+O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 33 testes com Vitest. Os dois rodam no GitHub Actions a cada push, junto com o build de produção.
 
 ## Fora de escopo
 

@@ -5,13 +5,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.sirtech.manager.cliente.dto.ClienteRequest;
 import br.com.sirtech.manager.cliente.dto.ClienteResponse;
-import br.com.sirtech.manager.nota.NotaService;
 import br.com.sirtech.manager.shared.excecao.RecursoNaoEncontradoException;
 import br.com.sirtech.manager.shared.validacao.CpfOuCnpjValidator;
 
@@ -20,12 +19,12 @@ public class ClienteService {
 
     private final ClienteRepository repository;
     private final Clock clock;
-    private final NotaService notas;
+    private final ApplicationEventPublisher eventos;
 
-    public ClienteService(ClienteRepository repository, Clock clock, @Lazy NotaService notas) {
+    public ClienteService(ClienteRepository repository, Clock clock, ApplicationEventPublisher eventos) {
         this.repository = repository;
         this.clock = clock;
-        this.notas = notas;
+        this.eventos = eventos;
     }
 
     @Transactional
@@ -67,7 +66,7 @@ public class ClienteService {
                 request.valorMensal(),
                 request.diaVencimento());
         repository.flush();
-        notas.realinharPendentes(cliente);
+        eventos.publishEvent(new ClienteAlterado(cliente));
         return ClienteResponse.de(cliente);
     }
 
