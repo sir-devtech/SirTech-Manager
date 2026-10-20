@@ -1,0 +1,86 @@
+<div class="tela">
+  <section class="marca">
+    <img class="logo" src="marca/logo-sirtech.png" alt="Sir Tech Solutions" />
+    <div class="texto">
+      <p class="sobre">Sir Tech Manager</p>
+      <h1>O mês da empresa num lugar só.</h1>
+      <dl>
+        <div>
+          <dt>Notas</dt>
+          <dd>Da previsão ao pagamento, com o XML da prefeitura.</dd>
+        </div>
+        <div>
+          <dt>Despesas</dt>
+          <dd>As que se repetem entram sozinhas no mês seguinte.</dd>
+        </div>
+        <div>
+          <dt>Lucro</dt>
+          <dd>Previsto e realizado, por cliente e por produto.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="acesso">
+    <div class="caixa">
+      <header>
+        <h2>Entrar</h2>
+        <p>Use o e-mail e a senha cadastrados.</p>
+      </header>
+
+      <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+        <mat-form-field appearance="outline">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="username" />
+          @if (form.controls.email.hasError('email')) {
+            <mat-error>Confira o e-mail.</mat-error>
+          } @else if (form.controls.email.hasError('required')) {
+            <mat-error>Informe o e-mail.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Senha</mat-label>
+          <input
+            matInput
+            [type]="senhaVisivel() ? 'text' : 'password'"
+            formControlName="senha"
+            autocomplete="current-password"
+          />
+          <button
+            matSuffix
+            mat-button
+            type="button"
+            class="ver"
+            (click)="senhaVisivel.set(!senhaVisivel())"
+            [attr.aria-label]="senhaVisivel() ? 'Esconder senha' : 'Mostrar senha'"
+          >
+            {{ senhaVisivel() ? 'Esconder' : 'Mostrar' }}
+          </button>
+          @if (form.controls.senha.hasError('required')) {
+            <mat-error>Informe a senha.</mat-error>
+          }
+        </mat-form-field>
+
+        @if (erro()) {
+          <p class="erro" role="alert">{{ erro() }}</p>
+        }
+
+        <button mat-flat-button type="submit" [disabled]="enviando()">
+          {{ enviando() ? 'Entrando…' : 'Entrar' }}
+        </button>
+      </form>
+
+      @if (demonstracao()?.ativa) {
+        <div class="demo">
+          <div>
+            <p class="titulo">Demonstração · dados fictícios</p>
+            <p class="cred">{{ demonstracao()?.email }}</p>
+            <p class="cred">{{ demonstracao()?.senha }}</p>
+          </div>
+          <button mat-stroked-button type="button" (click)="usarDemonstracao()">Preencher</button>
+        </div>
+      }
+    </div>
+  </section>
+</div>

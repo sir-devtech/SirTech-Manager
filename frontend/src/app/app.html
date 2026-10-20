@@ -1,24 +1,30 @@
-<header class="topo">
-  <a class="marca" routerLink="/" aria-label="Sir Tech Manager">
-    <img src="marca/logo-sirtech.png" alt="Sir Tech Solutions" />
-  </a>
-  <nav>
-    <a routerLink="/" routerLinkActive="ativa" [routerLinkActiveOptions]="{ exact: true }">Painel</a>
-    <a routerLink="/financeiro" routerLinkActive="ativa">Financeiro</a>
-    <a routerLink="/clientes" routerLinkActive="ativa">Clientes</a>
-    <a routerLink="/notas" routerLinkActive="ativa">Notas</a>
-    <a routerLink="/despesas" routerLinkActive="ativa">Despesas</a>
-  </nav>
-  <div class="canto">
-    @if (!noFinanceiro()) {
-      <label class="mes">
+@if (sessao.logado()) {
+  <header class="topo">
+    <a class="marca" routerLink="/" aria-label="Sir Tech Manager">
+      <img src="marca/logo-sirtech.png" alt="Sir Tech Solutions" />
+    </a>
+    <nav>
+      <a routerLink="/" routerLinkActive="ativa" [routerLinkActiveOptions]="{ exact: true }">Painel</a>
+      <a routerLink="/financeiro" routerLinkActive="ativa">Financeiro</a>
+      <a routerLink="/clientes" routerLinkActive="ativa">Clientes</a>
+      <a routerLink="/notas" routerLinkActive="ativa">Notas</a>
+      <a routerLink="/despesas" routerLinkActive="ativa">Despesas</a>
+    </nav>
+    <div class="canto">
+      <label class="mes" [class.oculto]="noFinanceiro()">
         Mês
         <input type="month" [value]="competencia.valor()" (change)="trocarMes($event)" />
       </label>
-    }
-  </div>
-</header>
+      <div class="quem">
+        <span [title]="sessao.usuario()?.email">{{ sessao.usuario()?.nome }}</span>
+        <button mat-stroked-button type="button" (click)="sair()">Sair</button>
+      </div>
+    </div>
+  </header>
 
-<main>
+  <main>
+    <router-outlet />
+  </main>
+} @else {
   <router-outlet />
-</main>
+}

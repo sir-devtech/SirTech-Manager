@@ -148,3 +148,14 @@ export const STATUS: { valor: StatusNota; rotulo: string }[] = [
 export function rotuloDe<T extends string>(lista: { valor: T; rotulo: string }[], valor: T): string {
   return lista.find((item) => item.valor === valor)?.rotulo ?? valor;
 }
+
+export interface UsuarioLogado {
+  nome: string;
+  email: string;
+}
+
+export interface Demonstracao {
+  ativa: boolean;
+  email: string | null;
+  senha: string | null;
+}

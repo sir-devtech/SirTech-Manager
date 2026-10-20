@@ -45,7 +45,30 @@ nav a.ativa {
 
 .canto {
   justify-self: end;
-  width: 240px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.oculto {
+  visibility: hidden;
+}
+
+.quem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 20px;
+  border-left: 1px solid rgba(232, 238, 245, 0.1);
+  color: var(--sir-muted);
+  font-size: 13px;
+}
+
+.quem span {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mes {
@@ -65,6 +88,9 @@ nav a.ativa {
 }
 
 main {
+  box-sizing: border-box;
+  max-width: 1296px;
+  margin: 0 auto;
   padding: 32px 28px 48px;
 }
 
@@ -74,8 +100,8 @@ main {
   }
 
   .canto {
-    width: auto;
     justify-self: start;
+    flex-wrap: wrap;
   }
 
   nav {

@@ -22,7 +22,7 @@ jobs:
         run: ./mvnw -B verify
 
   frontend:
-    name: Tela (ng build)
+    name: Tela (testes e build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,4 +35,7 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
-      - run: npx ng build
+      - name: Testes da tela (Vitest)
+        run: npx ng test --watch=false
+      - name: Build de produção
+        run: npx ng build
