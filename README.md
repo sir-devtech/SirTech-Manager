@@ -10,7 +10,8 @@ Feito como sistema real de uso próprio e como estudo de Java. Os dados desta ve
 - PostgreSQL 18, Flyway
 - Angular 22 com Angular Material
 - Docker Compose, GitHub Actions
-- Testes com JUnit 5, Mockito e Testcontainers
+- Spring Security: login com sessão, senha em BCrypt e proteção CSRF
+- Testes com JUnit 5, Mockito, Testcontainers e Vitest
 
 ## Como rodar
 
@@ -20,21 +21,32 @@ Com o Docker ligado:
 docker compose up -d --build
 ```
 
-Abra `http://localhost:4200`. A API fica em `http://localhost:8080` e o Swagger em `http://localhost:8080/swagger-ui.html`.
+Abra `http://localhost:4200` e entre com o login de demonstração, que a própria tela mostra:
 
-Esse comando sobe a demonstração, com três clientes fictícios e seis meses de histórico. Para o uso real, sem dados de exemplo e com volume separado, copie `.env.example` para `.env`, preencha `REAL_POSTGRES_PASSWORD` e rode:
+| E-mail | Senha |
+|---|---|
+| `demo@sirtech.example` | `demo-sirtech-2026` |
+
+A API fica em `http://localhost:8080` e o Swagger em `http://localhost:8080/swagger-ui.html` (a leitura é aberta; os pedidos exigem login). A demonstração tem três clientes fictícios e seis meses de histórico.
+
+### Uso real, separado da demonstração
+
+O uso real fica em outro arquivo, com outro banco e sem dados de exemplo. Copie `.env.example` para `.env`, preencha `REAL_POSTGRES_PASSWORD`, `SIRTECH_ADMIN_EMAIL` e `SIRTECH_ADMIN_SENHA`, pare a demonstração e rode:
 
 ```bash
-docker compose --profile real up -d --build
+docker compose down
+docker compose -f docker-compose.real.yml up -d --build
 ```
 
-Sem essa senha o banco real não é criado. Pare um ambiente antes de subir o outro: os dois usam as portas 4200, 8080 e 5432, e todas atendem só este computador (`127.0.0.1`).
+Sem essas variáveis o comando nem começa. As portas 4200, 8080 e 5432 atendem só este computador (`127.0.0.1`).
 
 ## O que dá para ver
 
+- **Entrar.** Sem sessão, nenhuma página abre e a API responde 401.
 - **Painel.** Previsto, recebido, despesas e lucro do mês, com a cor dizendo o que cada número é, e um gráfico dos últimos seis meses.
 - **Clientes.** Cadastro com validação de CPF e CNPJ.
 - **Notas.** A nota nasce pendente, passa a emitida (na mão ou importando o XML) e a paga. Cancelar libera o mês para outra.
+- **Financeiro.** O período (por padrão, os últimos 6 meses) como livro-caixa: demonstrativo, mês a mês, receita por cliente, despesas por categoria e notas em atraso.
 - **Despesas.** Avulsas ou recorrentes. A recorrente é copiada para o mês seguinte e não duplica.
 - **Backup.** Grava um arquivo SQL em `./backups`.
 
@@ -45,9 +57,10 @@ Sem essa senha o banco real não é criado. Pare um ambiente antes de subir o ou
 - **Geração no dia 1 e na inicialização.** Se a máquina ficou desligada, abrir o sistema põe o mês em dia e copia as despesas recorrentes do último mês que as tinha.
 - **Dinheiro em `BigDecimal`.** A coluna é `numeric`. Centavo não passa por ponto flutuante.
 - **Competência como `date`.** Guardada no dia 1 do mês, para o banco ordenar, e convertida para `YearMonth` no Java.
-- **Um tratador de erro.** `GlobalExceptionHandler` devolve `ProblemDetail`: 400 na validação, 404 quando não acha, 409 na constraint única e 422 na regra de negócio.
+- **Login com sessão, não JWT.** Tela e API ficam na mesma origem. Cookie `HttpOnly` e `SameSite=Strict`, senha só em hash BCrypt, token CSRF no cabeçalho, troca do id da sessão ao entrar e bloqueio após 5 senhas erradas.
+- **Um tratador de erro.** `GlobalExceptionHandler` devolve `ProblemDetail`: 400 na validação, 401 sem login, 403 sem CSRF, 404 quando não acha, 409 na constraint única, 422 na regra de negócio e 429 após muitas senhas erradas.
 - **Teste contra o PostgreSQL real.** O Testcontainers sobe um PostgreSQL 18 descartável. O índice parcial e o `ON CONFLICT` não existem num banco em memória, então o teste que importa usa o banco de verdade.
-- **Dois ambientes, o mesmo código.** O perfil `dev` carrega o seed fictício. O perfil real não carrega seed nenhum. Cada um tem o seu volume. Segredo fica no `.env`, que não entra no Git.
+- **Dois ambientes, o mesmo código.** `docker-compose.yml` é a demonstração, com seed e login fictícios. `docker-compose.real.yml` é o uso real, com projeto, banco e volume próprios, e exige senha do banco e do primeiro usuário. Segredo fica no `.env`, que não entra no Git.
 
 O porquê de cada uma está em [`docs/adr`](docs/adr).
 
@@ -58,11 +71,11 @@ cd backend && ./mvnw verify
 cd frontend && npm ci && npx ng test --watch=false && npx ng build
 ```
 
-O `mvn verify` sobe o PostgreSQL de teste pelo Docker. Os mesmos testes rodam no GitHub Actions, em cada push.
+O `mvn verify` roda 107 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 33 testes com Vitest. Os dois rodam no GitHub Actions a cada push, junto com o build de produção.
 
 ## Fora de escopo
 
-Emitir a nota no lugar da prefeitura, login, e-mail e deploy em nuvem.
+Emitir a nota no lugar da prefeitura, e-mail e deploy em nuvem.
 
 ## Documentação
 
