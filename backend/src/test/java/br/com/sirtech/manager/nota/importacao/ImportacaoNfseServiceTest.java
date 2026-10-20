@@ -37,7 +37,7 @@ class ImportacaoNfseServiceTest {
     private static final YearMonth COMPETENCIA = YearMonth.of(2026, 10);
     private static final DadosNfse DADOS = new DadosNfse(
             "123", LocalDate.of(2026, 10, 5), COMPETENCIA, new BigDecimal("250.00"),
-            "11222333000181", "00000000000191");
+            "11222333000181", "12345678000195");
 
     @Mock
     private LeitorNfse leitor;

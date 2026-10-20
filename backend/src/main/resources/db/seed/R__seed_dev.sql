@@ -2,10 +2,14 @@
 -- Não roda no perfil real. Migration repeatable: todo INSERT é idempotente.
 -- Os CNPJs só são válidos nos dígitos verificadores.
 
+-- Bancos de demonstração antigos usavam outro CNPJ na padaria. Troca no lugar, sem duplicar.
+UPDATE cliente SET documento = '12345678000195'
+WHERE nome = 'Padaria Pão Quente (fictícia)' AND documento <> '12345678000195';
+
 INSERT INTO cliente (nome, documento, email, produto, valor_mensal, dia_vencimento)
 VALUES ('Barbearia Navalha de Ouro (fictícia)', '11222333000181', 'contato@navalha.example',    'SIR_BARBER', 300.00, 10),
        ('Pet Shop Amigo Fiel (fictícia)',       '11444777000161', 'contato@amigofiel.example',  'SIR_PET',    200.00, 10),
-       ('Padaria Pão Quente (fictícia)',        '00000000000191', 'contato@paoquente.example',  'SIR_FOOD',   180.00, 10)
+       ('Padaria Pão Quente (fictícia)',        '12345678000195', 'contato@paoquente.example',  'SIR_FOOD',   180.00, 10)
 ON CONFLICT (documento) DO UPDATE
     SET valor_mensal = EXCLUDED.valor_mensal,
         dia_vencimento = EXCLUDED.dia_vencimento;
@@ -17,7 +21,7 @@ SET valor = cliente.valor_mensal,
 FROM cliente
 WHERE nota.cliente_id = cliente.id
   AND nota.status = 'PENDENTE'
-  AND cliente.documento IN ('11222333000181', '11444777000161', '00000000000191');
+  AND cliente.documento IN ('11222333000181', '11444777000161', '12345678000195');
 
 -- Seis meses: os anteriores pagos, o corrente pendente.
 INSERT INTO nota_fiscal (
@@ -37,7 +41,7 @@ CROSS JOIN (
     SELECT date_trunc('month', now() AT TIME ZONE 'America/Sao_Paulo')::date AS dia
 ) AS atual
 CROSS JOIN LATERAL generate_series(atual.dia - interval '5 months', atual.dia::timestamp, interval '1 month') AS mes(competencia)
-WHERE cliente.documento IN ('11222333000181', '11444777000161', '00000000000191')
+WHERE cliente.documento IN ('11222333000181', '11444777000161', '12345678000195')
 ON CONFLICT (cliente_id, competencia) WHERE status <> 'CANCELADA' DO NOTHING;
 
 -- Servidor, domínio e ferramenta se repetem. O índice impede a segunda cópia no mesmo mês.

@@ -22,13 +22,13 @@ docker compose up -d --build
 
 Abra `http://localhost:4200`. A API fica em `http://localhost:8080` e o Swagger em `http://localhost:8080/swagger-ui.html`.
 
-Esse comando sobe a demonstração, com dois clientes fictícios. Para o uso real, sem dados de exemplo e com volume separado:
+Esse comando sobe a demonstração, com três clientes fictícios e seis meses de histórico. Para o uso real, sem dados de exemplo e com volume separado, copie `.env.example` para `.env`, preencha `REAL_POSTGRES_PASSWORD` e rode:
 
 ```bash
 docker compose --profile real up -d --build
 ```
 
-Pare um antes de subir o outro: os dois usam as portas 4200, 8080 e 5432.
+Sem essa senha o banco real não é criado. Pare um ambiente antes de subir o outro: os dois usam as portas 4200, 8080 e 5432, e todas atendem só este computador (`127.0.0.1`).
 
 ## O que dá para ver
 

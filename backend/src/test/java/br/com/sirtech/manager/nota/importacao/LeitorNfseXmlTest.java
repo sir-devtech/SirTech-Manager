@@ -25,7 +25,7 @@ class LeitorNfseXmlTest {
         assertThat(dados.competencia()).hasToString("2026-10");
         assertThat(dados.valor()).isEqualByComparingTo("250.00");
         assertThat(dados.documentoTomador()).isEqualTo("11222333000181");
-        assertThat(dados.documentoPrestador()).isEqualTo("00000000000191");
+        assertThat(dados.documentoPrestador()).isEqualTo("12345678000195");
     }
 
     @Test
@@ -34,7 +34,7 @@ class LeitorNfseXmlTest {
                 <NFSe><infNFSe>
                   <nNFSe>77</nNFSe>
                   <dhEmi>2026-11-02T09:00:00-03:00</dhEmi>
-                  <prest><CNPJ>00000000000191</CNPJ></prest>
+                  <prest><CNPJ>12345678000195</CNPJ></prest>
                   <toma><CPF>529.982.247-25</CPF></toma>
                   <valores><vServ>1.234,50</vServ></valores>
                 </infNFSe></NFSe>
