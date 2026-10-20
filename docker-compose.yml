@@ -2,7 +2,7 @@
 # Uso real da Sir Tech: docker compose --profile real up -d --build
 services:
   db:
-    image: postgres:16
+    image: postgres:18
     container_name: sirtech-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sirtech}
@@ -11,7 +11,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - pgdata-demo:/var/lib/postgresql/data
+      - pgdata-demo:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sirtech} -d ${POSTGRES_DB:-sirtech}"]
       interval: 5s
@@ -19,7 +19,7 @@ services:
       retries: 10
 
   db-real:
-    image: postgres:16
+    image: postgres:18
     container_name: sirtech-db-real
     profiles: ["real"]
     environment:
@@ -29,7 +29,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - pgdata-real:/var/lib/postgresql/data
+      - pgdata-real:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sirtech} -d ${POSTGRES_DB:-sirtech}"]
       interval: 5s

@@ -2,10 +2,10 @@ package br.com.sirtech.manager;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
- * Base dos testes de integração: sobe UM PostgreSQL 16 real em Docker e aponta o Spring para ele
+ * Base dos testes de integração: sobe UM PostgreSQL 18 real em Docker e aponta o Spring para ele
  * via {@link ServiceConnection}. As migrations do Flyway rodam de verdade, sem o seed (perfil dev
  * não é ativado).
  *
@@ -21,7 +21,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public abstract class AbstractIntegrationTest {
 
     @ServiceConnection
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
+    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:18-alpine");
 
     static {
         POSTGRES.start();

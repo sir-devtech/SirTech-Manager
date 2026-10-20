@@ -1,5 +1,5 @@
 # Etapa 1: gera os arquivos estáticos.
-FROM node:24-alpine AS build
+FROM node:24.20.0-alpine AS build
 WORKDIR /fonte
 COPY package.json package-lock.json ./
 RUN npm ci

@@ -10,7 +10,7 @@ Regras importantes deste sistema vivem **no banco** (UNIQUE, CHECK, índice úni
 |---|---|---|---|
 | Unitário | JUnit 5 + Mockito + AssertJ | `*Test` | `mvn test` (Surefire) |
 | API (camada web) | `@WebMvcTest` + MockMvc | `*Test` | `mvn test` |
-| Integração | `@SpringBootTest` + Testcontainers (PostgreSQL 16) | `*IT` | `mvn verify` (Failsafe) |
+| Integração | `@SpringBootTest` + Testcontainers (PostgreSQL 18) | `*IT` | `mvn verify` (Failsafe) |
 
 - Um único container por execução (padrão *singleton container*) para os ITs ficarem rápidos.
 - O tempo é injetado (`Clock`) para testes de data serem determinísticos.

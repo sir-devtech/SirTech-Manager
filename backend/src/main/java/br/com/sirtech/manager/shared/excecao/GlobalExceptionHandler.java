@@ -61,7 +61,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RegraNegocioException.class)
     ProblemDetail tratarRegraNegocio(RegraNegocioException ex) {
-        return problema(HttpStatus.UNPROCESSABLE_ENTITY, "Regra de negócio violada", ex.getMessage());
+        return problema(HttpStatus.UNPROCESSABLE_CONTENT, "Regra de negócio violada", ex.getMessage());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

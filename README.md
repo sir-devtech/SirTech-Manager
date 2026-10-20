@@ -6,9 +6,9 @@ Feito como sistema real de uso próprio e como estudo de Java. Os dados desta ve
 
 ## Stack
 
-- Java 21, Spring Boot 3.5, Maven Wrapper
-- PostgreSQL 16, Flyway
-- Angular 21 com Angular Material
+- Java 21, Spring Boot 4.1, Maven Wrapper
+- PostgreSQL 18, Flyway
+- Angular 22 com Angular Material
 - Docker Compose, GitHub Actions
 - Testes com JUnit 5, Mockito e Testcontainers
 
@@ -46,7 +46,7 @@ Pare um antes de subir o outro: os dois usam as portas 4200, 8080 e 5432.
 - **Dinheiro em `BigDecimal`.** A coluna é `numeric`. Centavo não passa por ponto flutuante.
 - **Competência como `date`.** Guardada no dia 1 do mês, para o banco ordenar, e convertida para `YearMonth` no Java.
 - **Um tratador de erro.** `GlobalExceptionHandler` devolve `ProblemDetail`: 400 na validação, 404 quando não acha, 409 na constraint única e 422 na regra de negócio.
-- **Teste contra o PostgreSQL real.** O Testcontainers sobe um PostgreSQL 16 descartável. O índice parcial e o `ON CONFLICT` não existem num banco em memória, então o teste que importa usa o banco de verdade.
+- **Teste contra o PostgreSQL real.** O Testcontainers sobe um PostgreSQL 18 descartável. O índice parcial e o `ON CONFLICT` não existem num banco em memória, então o teste que importa usa o banco de verdade.
 - **Dois ambientes, o mesmo código.** O perfil `dev` carrega o seed fictício. O perfil real não carrega seed nenhum. Cada um tem o seu volume. Segredo fica no `.env`, que não entra no Git.
 
 O porquê de cada uma está em [`docs/adr`](docs/adr).
