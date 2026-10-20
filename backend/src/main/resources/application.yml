@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: sirtech-manager
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:sirtech}
+    username: ${POSTGRES_USER:sirtech}
+    password: ${POSTGRES_PASSWORD:sirtech}
+  jpa:
+    # O schema é responsabilidade do Flyway; o Hibernate só confere se as entidades batem com ele.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    locations: classpath:db/migration
+  jackson:
+    time-zone: America/Sao_Paulo
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+sirtech:
+  zona: America/Sao_Paulo

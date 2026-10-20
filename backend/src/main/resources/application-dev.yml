@@ -1,0 +1,4 @@
+# Perfil de demonstração: carrega dados FICTÍCIOS (db/seed) além das migrations.
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed

@@ -1,0 +1,27 @@
+# ===== Segredos e dados reais (NUNCA versionar) =====
+.env
+backups/*
+!backups/.gitkeep
+*.sql.gz
+*.dump
+
+# ===== Java / Maven =====
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.log
+hs_err_pid*
+
+# ===== Node / Angular =====
+node_modules/
+dist/
+.angular/
+coverage/
+
+# ===== IDEs e SO =====
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
