@@ -1,0 +1,19 @@
+<header class="topo">
+  <a class="marca" routerLink="/" aria-label="Sir Tech Manager">
+    <img src="marca/logo-sirtech.png" alt="Sir Tech Solutions" />
+  </a>
+  <nav>
+    <a routerLink="/" routerLinkActive="ativa" [routerLinkActiveOptions]="{ exact: true }">Painel</a>
+    <a routerLink="/clientes" routerLinkActive="ativa">Clientes</a>
+    <a routerLink="/notas" routerLinkActive="ativa">Notas</a>
+    <a routerLink="/despesas" routerLinkActive="ativa">Despesas</a>
+  </nav>
+  <label class="mes">
+    Mês
+    <input type="month" [value]="competencia.valor()" (change)="trocarMes($event)" />
+  </label>
+</header>
+
+<main>
+  <router-outlet />
+</main>

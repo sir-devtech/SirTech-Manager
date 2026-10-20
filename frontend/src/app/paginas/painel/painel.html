@@ -1,0 +1,162 @@
+<div class="acoes">
+  <h1>Painel</h1>
+  <div>
+    <button mat-stroked-button color="primary" (click)="gerar()">Gerar notas do mês</button>
+    <label class="arquivo">
+      Importar XML
+      <input type="file" accept=".xml,text/xml" (change)="importar($event)" hidden />
+    </label>
+    <button mat-stroked-button (click)="backup()">Fazer backup</button>
+  </div>
+</div>
+
+@if (resumo(); as resumo) {
+  <section class="cards">
+    <article class="card previsto">
+      <header><span>Previsto</span><mat-icon>event_note</mat-icon></header>
+      <strong>{{ resumo.receitaPrevista | currency: 'BRL' }}</strong>
+      <small>{{ resumo.notasPendentesEmissao }} nota(s) ainda por emitir</small>
+    </article>
+    <article class="card recebido">
+      <header><span>Recebido</span><mat-icon>payments</mat-icon></header>
+      <strong>{{ resumo.receitaRecebida | currency: 'BRL' }}</strong>
+      <div class="barra"><i [style.width.%]="fracaoRecebida() * 100"></i></div>
+      <small>{{ fracaoRecebida() | percent }} do previsto</small>
+    </article>
+    <article class="card despesas">
+      <header><span>Despesas</span><mat-icon>receipt_long</mat-icon></header>
+      <strong>{{ resumo.totalDespesas | currency: 'BRL' }}</strong>
+      <small>Servidor, Simples e outras do mês</small>
+    </article>
+    <article class="card lucro" [class.negativo]="resumo.lucroRealizado < 0">
+      <header>
+        <span>Lucro do que entrou</span>
+        <mat-icon>{{ resumo.lucroRealizado < 0 ? 'trending_down' : 'trending_up' }}</mat-icon>
+      </header>
+      <strong>{{ resumo.lucroRealizado | currency: 'BRL' }}</strong>
+      <small>Se todos pagarem: {{ resumo.lucroPrevisto | currency: 'BRL' }}</small>
+    </article>
+  </section>
+
+  @if (vencidas().length > 0) {
+    <p class="alerta">
+      <mat-icon>warning</mat-icon>
+      {{ vencidas().length }} nota(s) vencida(s) somando {{ totalVencido() | currency: 'BRL' }}.
+    </p>
+  }
+}
+
+@if (historico().length > 0) {
+  <section class="grafico">
+    <header>
+      <h2>Últimos 6 meses</h2>
+      <ul class="legenda">
+        <li class="previsto">Previsto</li>
+        <li class="recebido">Recebido</li>
+        <li class="despesas">Despesas</li>
+      </ul>
+    </header>
+    <div class="meses">
+      @for (mes of historico(); track mes.resumo.competencia) {
+        <div class="mes" [class.atual]="mes.atual">
+          <div class="barras">
+            <i
+              class="previsto"
+              [style.height]="altura(mes.resumo.receitaPrevista)"
+              [title]="'Previsto ' + (mes.resumo.receitaPrevista | currency: 'BRL')"
+            ></i>
+            <i
+              class="recebido"
+              [style.height]="altura(mes.resumo.receitaRecebida)"
+              [title]="'Recebido ' + (mes.resumo.receitaRecebida | currency: 'BRL')"
+            ></i>
+            <i
+              class="despesas"
+              [style.height]="altura(mes.resumo.totalDespesas)"
+              [title]="'Despesas ' + (mes.resumo.totalDespesas | currency: 'BRL')"
+            ></i>
+          </div>
+          <span>{{ mes.rotulo }}</span>
+        </div>
+      }
+    </div>
+  </section>
+}
+
+<section class="listas">
+  <div>
+    <h2>Pendentes de emissão</h2>
+    <div class="grade">
+      @if (!carregou()) {
+        <p class="vazio">Carregando…</p>
+      } @else if (pendentes().length === 0) {
+        <p class="vazio">Nada pendente.</p>
+      } @else {
+        <table mat-table [dataSource]="paginasPendentes.fatia(pendentes())">
+          <ng-container matColumnDef="cliente">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let nota">{{ nota.clienteNome }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vencimento">
+            <th mat-header-cell *matHeaderCellDef>Vence</th>
+            <td mat-cell *matCellDef="let nota">{{ nota.dataVencimento | date: 'dd/MM' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="valor">
+            <th mat-header-cell *matHeaderCellDef class="num">Valor</th>
+            <td mat-cell *matCellDef="let nota" class="num">{{ nota.valor | currency: 'BRL' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="['cliente', 'vencimento', 'valor']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['cliente', 'vencimento', 'valor']"></tr>
+        </table>
+        @if (pendentes().length > paginasPendentes.opcoes[0]) {
+          <mat-paginator
+            [length]="pendentes().length"
+            [pageIndex]="paginasPendentes.indice()"
+            [pageSize]="paginasPendentes.tamanho()"
+            [pageSizeOptions]="paginasPendentes.opcoes"
+            (page)="paginasPendentes.mudar($event)"
+          />
+        }
+      }
+    </div>
+  </div>
+  <div>
+    <h2>Vencidas</h2>
+    <div class="grade">
+      @if (!carregou()) {
+        <p class="vazio">Carregando…</p>
+      } @else if (vencidas().length === 0) {
+        <p class="vazio">Nenhuma vencida.</p>
+      } @else {
+        <table mat-table [dataSource]="paginasVencidas.fatia(vencidas())">
+          <ng-container matColumnDef="cliente">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let nota">{{ nota.clienteNome }}</td>
+          </ng-container>
+          <ng-container matColumnDef="vencimento">
+            <th mat-header-cell *matHeaderCellDef>Venceu</th>
+            <td mat-cell *matCellDef="let nota">
+              {{ nota.dataVencimento | date: 'dd/MM' }}
+              <span class="atraso">há {{ diasDeAtraso(nota) }} dia(s)</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="valor">
+            <th mat-header-cell *matHeaderCellDef class="num">Valor</th>
+            <td mat-cell *matCellDef="let nota" class="num">{{ nota.valor | currency: 'BRL' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="['cliente', 'vencimento', 'valor']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['cliente', 'vencimento', 'valor']"></tr>
+        </table>
+        @if (vencidas().length > paginasVencidas.opcoes[0]) {
+          <mat-paginator
+            [length]="vencidas().length"
+            [pageIndex]="paginasVencidas.indice()"
+            [pageSize]="paginasVencidas.tamanho()"
+            [pageSizeOptions]="paginasVencidas.opcoes"
+            (page)="paginasVencidas.mudar($event)"
+          />
+        }
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>{{ dados.despesa ? 'Editar despesa' : 'Nova despesa' }}</h2>
+<form [formGroup]="form" (ngSubmit)="salvar()">
+  <mat-dialog-content class="campos">
+    <mat-form-field>
+      <mat-label>Descrição</mat-label>
+      <input matInput formControlName="descricao" placeholder="DigitalOcean, Simples Nacional..." />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Categoria</mat-label>
+      <mat-select formControlName="categoria">
+        @for (categoria of categorias; track categoria.valor) {
+          <mat-option [value]="categoria.valor">{{ categoria.rotulo }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Valor</mat-label>
+      <input matInput type="number" min="0.01" step="0.01" formControlName="valor" />
+    </mat-form-field>
+    <mat-checkbox formControlName="recorrente">Repete todo mês</mat-checkbox>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Voltar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="salvando">Salvar</button>
+  </mat-dialog-actions>
+</form>

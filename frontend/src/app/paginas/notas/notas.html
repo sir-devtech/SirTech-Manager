@@ -1,0 +1,86 @@
+<div class="acoes">
+  <h1>Notas</h1>
+  <label class="arquivo">
+    Importar XML
+    <input type="file" accept=".xml,text/xml" (change)="importar($event)" hidden />
+  </label>
+</div>
+
+<div class="filtros">
+  <mat-form-field>
+    <mat-label>Situação</mat-label>
+    <mat-select [value]="status()" (selectionChange)="escolherStatus($event.value)">
+      <mat-option value="">Todas</mat-option>
+      @for (item of statusOpcoes; track item.valor) {
+        <mat-option [value]="item.valor">{{ item.rotulo }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Cliente</mat-label>
+    <mat-select [value]="clienteId()" (selectionChange)="escolherCliente($event.value)">
+      <mat-option value="">Todos</mat-option>
+      @for (cliente of clientes(); track cliente.id) {
+        <mat-option [value]="cliente.id">{{ cliente.nome }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div class="grade">
+  @if (carregou() && notas().length === 0) {
+    <p class="vazio">Nenhuma nota neste mês. No painel, use “Gerar notas do mês”.</p>
+  } @else {
+    <table mat-table [dataSource]="paginas.fatia(notas())">
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef>Cliente</th>
+        <td mat-cell *matCellDef="let nota">{{ nota.clienteNome }}</td>
+      </ng-container>
+      <ng-container matColumnDef="numero">
+        <th mat-header-cell *matHeaderCellDef>Número</th>
+        <td mat-cell *matCellDef="let nota" class="doc">{{ nota.numero || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="valor">
+        <th mat-header-cell *matHeaderCellDef class="num">Valor</th>
+        <td mat-cell *matCellDef="let nota" class="num">{{ nota.valor | currency: 'BRL' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="vencimento">
+        <th mat-header-cell *matHeaderCellDef>Vencimento</th>
+        <td mat-cell *matCellDef="let nota">
+          {{ nota.dataVencimento | date: 'dd/MM/yyyy' }}
+          @if (nota.vencida) {
+            <span class="aviso">vencida</span>
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Situação</th>
+        <td mat-cell *matCellDef="let nota">
+          <span class="situacao" [attr.data-status]="nota.status">{{ rotuloStatus(nota.status) }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let nota">
+          @if (nota.status === 'PENDENTE') {
+            <button mat-stroked-button color="primary" (click)="emitir(nota)">Emitir</button>
+            <button mat-stroked-button (click)="cancelar(nota)">Cancelar</button>
+          }
+          @if (nota.status === 'EMITIDA') {
+            <button mat-stroked-button color="primary" (click)="pagar(nota)">Pagar</button>
+            <button mat-stroked-button (click)="cancelar(nota)">Cancelar</button>
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+      <tr mat-row *matRowDef="let row; columns: colunas"></tr>
+    </table>
+    <mat-paginator
+      [length]="notas().length"
+      [pageIndex]="paginas.indice()"
+      [pageSize]="paginas.tamanho()"
+      [pageSizeOptions]="paginas.opcoes"
+      (page)="paginas.mudar($event)"
+    />
+  }
+</div>

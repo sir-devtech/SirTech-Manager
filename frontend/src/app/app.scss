@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--sir-line);
+  background: #050910;
+}
+
+.marca img {
+  height: 92px;
+  width: auto;
+  display: block;
+  mix-blend-mode: screen;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  color: var(--sir-muted);
+  border: 1px solid transparent;
+}
+
+nav a:hover,
+nav a.ativa {
+  background: var(--sir-cyan);
+  color: #041018;
+  font-weight: 500;
+}
+
+.mes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sir-muted);
+}
+
+.mes input {
+  background: transparent;
+  color: var(--sir-text);
+  border: 1px solid var(--sir-line);
+  border-radius: 999px;
+  padding: 8px 12px;
+}
+
+main {
+  padding: 32px 28px 48px;
+}
+
+@media (max-width: 720px) {
+  .topo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

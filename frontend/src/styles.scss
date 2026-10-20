@@ -1,0 +1,175 @@
+// Cores da Sir Tech: fundo escuro do site e o ciano do hexágono da logo.
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$azure-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+
+  --sir-bg: #070d16;
+  --sir-card: #101a28;
+  --sir-line: rgba(0, 200, 240, 0.28);
+  --sir-cyan: #00c8f0;
+  --sir-text: #f4f7fb;
+  --sir-muted: #9aabbd;
+  --sir-verde: #3ddc97;
+  --sir-ambar: #e2b340;
+  --sir-vermelho: #f0616d;
+  --mat-sys-surface: #070d16;
+  --mat-sys-on-surface: #f4f7fb;
+  --mat-sys-surface-container: #101a28;
+  --mat-sys-surface-container-high: #162333;
+  --mat-sys-primary: #00c8f0;
+  --mat-sys-on-primary: #041018;
+}
+
+body {
+  color-scheme: dark;
+  background: var(--sir-bg);
+  color: var(--sir-text);
+  margin: 0;
+  min-height: 100%;
+  font-family: Roboto, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+.campos {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+  padding-top: 8px;
+}
+
+.campos mat-form-field {
+  width: 100%;
+}
+
+.grade {
+  border: 1px solid rgba(232, 238, 245, 0.12);
+  border-radius: 8px;
+  background: #0c1522;
+  overflow: hidden;
+}
+
+.grade .mat-mdc-table {
+  width: 100%;
+  background: transparent;
+}
+
+.grade .mat-mdc-header-row {
+  background: #09111b;
+}
+
+.grade .mat-mdc-header-cell {
+  color: #8ea0b5;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grade .mat-mdc-header-cell,
+.grade .mat-mdc-cell {
+  border-bottom: 1px solid rgba(232, 238, 245, 0.08);
+  padding: 14px 16px;
+}
+
+.grade .mat-mdc-header-cell + .mat-mdc-header-cell,
+.grade .mat-mdc-cell + .mat-mdc-cell {
+  border-left: 1px solid rgba(232, 238, 245, 0.06);
+}
+
+.grade .mat-mdc-row:last-child .mat-mdc-cell {
+  border-bottom: none;
+}
+
+.grade .mat-mdc-row:hover .mat-mdc-cell {
+  background: rgba(0, 200, 240, 0.045);
+}
+
+.grade .mat-column-acoes {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.grade .mat-column-acoes .mat-mdc-outlined-button + .mat-mdc-outlined-button {
+  margin-left: 8px;
+}
+
+.grade .num,
+.grade .mat-column-vencimento,
+.grade .mat-column-ativo {
+  white-space: nowrap;
+}
+
+.grade .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.grade .doc {
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+.grade .mat-mdc-paginator {
+  background: transparent;
+  border-top: 1px solid rgba(232, 238, 245, 0.08);
+  color: var(--sir-muted);
+}
+
+.situacao::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  background: #8ea0b5;
+}
+
+.situacao[data-status='PENDENTE']::before {
+  background: #e2b340;
+}
+
+.situacao[data-status='EMITIDA']::before {
+  background: var(--sir-cyan);
+}
+
+.situacao[data-status='PAGA']::before,
+.situacao.ativo::before {
+  background: #3ddc97;
+}
+
+.situacao.inativo::before,
+.situacao[data-status='CANCELADA']::before {
+  background: #6d7c8d;
+}
+
+.aviso {
+  margin-left: 8px;
+  color: #e2b340;
+  font-size: 12px;
+}
+
+.vazio {
+  margin: 0;
+  padding: 28px 16px;
+  color: var(--sir-muted);
+}
+
+.mat-mdc-outlined-button {
+  border-radius: 6px;
+}

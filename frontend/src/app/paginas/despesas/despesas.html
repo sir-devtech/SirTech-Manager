@@ -1,0 +1,45 @@
+<div class="acoes">
+  <h1>Despesas</h1>
+  <button mat-stroked-button color="primary" (click)="abrir(null)">Nova despesa</button>
+</div>
+
+<div class="grade">
+  @if (carregou() && despesas().length === 0) {
+    <p class="vazio">Nenhuma despesa neste mês. O servidor e o Simples entram aqui.</p>
+  } @else {
+    <table mat-table [dataSource]="paginas.fatia(despesas())">
+      <ng-container matColumnDef="descricao">
+        <th mat-header-cell *matHeaderCellDef>Descrição</th>
+        <td mat-cell *matCellDef="let despesa">{{ despesa.descricao }}</td>
+      </ng-container>
+      <ng-container matColumnDef="categoria">
+        <th mat-header-cell *matHeaderCellDef>Categoria</th>
+        <td mat-cell *matCellDef="let despesa">{{ rotulo(despesa.categoria) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="valor">
+        <th mat-header-cell *matHeaderCellDef class="num">Valor</th>
+        <td mat-cell *matCellDef="let despesa" class="num">{{ despesa.valor | currency: 'BRL' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="recorrente">
+        <th mat-header-cell *matHeaderCellDef>Repete</th>
+        <td mat-cell *matCellDef="let despesa">{{ despesa.recorrente ? 'Todo mês' : 'Só este mês' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let despesa">
+          <button mat-stroked-button (click)="abrir(despesa)">Editar</button>
+          <button mat-stroked-button (click)="excluir(despesa)">Excluir</button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+      <tr mat-row *matRowDef="let row; columns: colunas"></tr>
+    </table>
+    <mat-paginator
+      [length]="despesas().length"
+      [pageIndex]="paginas.indice()"
+      [pageSize]="paginas.tamanho()"
+      [pageSizeOptions]="paginas.opcoes"
+      (page)="paginas.mudar($event)"
+    />
+  }
+</div>
