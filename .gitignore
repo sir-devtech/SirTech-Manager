@@ -1,5 +1,6 @@
 # ===== Segredos e dados reais (NUNCA versionar) =====
 .env
+importacoes/
 backups/*
 !backups/.gitkeep
 *.sql.gz

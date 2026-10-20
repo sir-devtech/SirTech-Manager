@@ -14,7 +14,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
  * container ao fim de cada classe, enquanto o Spring reaproveita o contexto (em cache) que ainda
  * aponta para a porta do container antigo, causando "Connection refused" na classe seguinte.
  */
-@SpringBootTest
+@SpringBootTest(properties = {
+        "sirtech.geracao.agendamento.habilitado=false",
+        "sirtech.geracao.inicializacao.habilitado=false"
+})
 public abstract class AbstractIntegrationTest {
 
     @ServiceConnection

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import br.com.sirtech.manager.AbstractIntegrationTest;
 
@@ -17,8 +18,13 @@ class ClienteRepositoryIT extends AbstractIntegrationTest {
     @Autowired
     private ClienteRepository repository;
 
+    @Autowired
+    private JdbcTemplate jdbc;
+
     @AfterEach
     void limpar() {
+        jdbc.update("DELETE FROM despesa");
+        jdbc.update("DELETE FROM nota_fiscal");
         repository.deleteAll();
     }
 

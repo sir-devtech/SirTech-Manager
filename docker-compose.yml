@@ -1,3 +1,5 @@
+# Um comando sobe tudo. Sem --profile, sobe o demo (dados fictícios).
+# Uso real da Sir Tech: docker compose --profile real up -d --build
 services:
   db:
     image: postgres:16
@@ -16,5 +18,78 @@ services:
       timeout: 3s
       retries: 10
 
+  db-real:
+    image: postgres:16
+    container_name: sirtech-db-real
+    profiles: ["real"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
+      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sirtech}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata-real:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sirtech} -d ${POSTGRES_DB:-sirtech}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    container_name: sirtech-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
+      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sirtech}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backups:/app/backups
+
+  api-real:
+    build: ./backend
+    container_name: sirtech-api-real
+    profiles: ["real"]
+    depends_on:
+      db-real:
+        condition: service_healthy
+    environment:
+      DB_HOST: db-real
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-sirtech}
+      POSTGRES_USER: ${POSTGRES_USER:-sirtech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sirtech}
+      SIRTECH_CNPJ: ${SIRTECH_CNPJ:-}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backups:/app/backups
+
+  web:
+    build: ./frontend
+    container_name: sirtech-web
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+
+  web-real:
+    build: ./frontend
+    container_name: sirtech-web-real
+    profiles: ["real"]
+    depends_on:
+      - api-real
+    ports:
+      - "4200:80"
+
 volumes:
   pgdata-demo:
+  pgdata-real:

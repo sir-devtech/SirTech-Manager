@@ -21,3 +21,13 @@ springdoc:
 
 sirtech:
   zona: America/Sao_Paulo
+  geracao:
+    agendamento:
+      habilitado: true
+    inicializacao:
+      habilitado: true
+  # CNPJ da própria Sir Tech. Vazio não confere o prestador do XML.
+  cnpj: ""
+  backup:
+    diretorio: ./backups
+    comando: pg_dump

@@ -3,12 +3,15 @@ package br.com.sirtech.manager.cliente;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.sirtech.manager.cliente.dto.ClienteRequest;
 import br.com.sirtech.manager.cliente.dto.ClienteResponse;
+import br.com.sirtech.manager.nota.NotaService;
 import br.com.sirtech.manager.shared.excecao.RecursoNaoEncontradoException;
 import br.com.sirtech.manager.shared.validacao.CpfOuCnpjValidator;
 
@@ -17,10 +20,12 @@ public class ClienteService {
 
     private final ClienteRepository repository;
     private final Clock clock;
+    private final NotaService notas;
 
-    public ClienteService(ClienteRepository repository, Clock clock) {
+    public ClienteService(ClienteRepository repository, Clock clock, @Lazy NotaService notas) {
         this.repository = repository;
         this.clock = clock;
+        this.notas = notas;
     }
 
     @Transactional
@@ -62,6 +67,7 @@ public class ClienteService {
                 request.valorMensal(),
                 request.diaVencimento());
         repository.flush();
+        notas.realinharPendentes(cliente);
         return ClienteResponse.de(cliente);
     }
 
@@ -84,5 +90,11 @@ public class ClienteService {
     public Cliente buscarEntidade(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente", id));
+    }
+
+    /** Outros módulos procuram o cliente pelo documento sem abrir o repositório dele. */
+    @Transactional(readOnly = true)
+    public Optional<Cliente> procurarPorDocumento(String documento) {
+        return repository.findByDocumento(CpfOuCnpjValidator.somenteDigitos(documento));
     }
 }

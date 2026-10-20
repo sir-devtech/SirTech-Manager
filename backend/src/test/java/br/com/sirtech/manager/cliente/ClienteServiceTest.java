@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.sirtech.manager.cliente.dto.ClienteRequest;
 import br.com.sirtech.manager.cliente.dto.ClienteResponse;
+import br.com.sirtech.manager.nota.NotaService;
 import br.com.sirtech.manager.shared.excecao.RecursoNaoEncontradoException;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,11 +34,14 @@ class ClienteServiceTest {
     @Mock
     private ClienteRepository repository;
 
+    @Mock
+    private NotaService notas;
+
     private ClienteService service;
 
     @BeforeEach
     void setUp() {
-        service = new ClienteService(repository, CLOCK);
+        service = new ClienteService(repository, CLOCK, notas);
     }
 
     @Test
