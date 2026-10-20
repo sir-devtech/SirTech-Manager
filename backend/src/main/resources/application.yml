@@ -15,6 +15,16 @@ spring:
   jackson:
     time-zone: America/Sao_Paulo
 
+server:
+  servlet:
+    session:
+      # 8 horas sem uso e a sessão expira; a tela volta para o login.
+      timeout: 8h
+      cookie:
+        name: SIRTECH_SESSAO
+        http-only: true
+        same-site: strict
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -31,3 +41,9 @@ sirtech:
   backup:
     diretorio: ./backups
     comando: pg_dump
+  acesso:
+    # Primeiro usuário, criado só se a tabela estiver vazia. Valores vêm do ambiente, nunca do Git.
+    inicial:
+      nome: ${SIRTECH_ADMIN_NOME:}
+      email: ${SIRTECH_ADMIN_EMAIL:}
+      senha: ${SIRTECH_ADMIN_SENHA:}

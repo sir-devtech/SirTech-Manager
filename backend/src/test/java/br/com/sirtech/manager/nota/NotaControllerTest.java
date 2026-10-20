@@ -14,6 +14,7 @@ import java.time.YearMonth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -25,6 +26,9 @@ import br.com.sirtech.manager.shared.config.AnoMesWebConfig;
 import br.com.sirtech.manager.shared.excecao.RecursoNaoEncontradoException;
 import br.com.sirtech.manager.shared.excecao.RegraNegocioException;
 
+// Filtros de segurança desligados: aqui o assunto é validação e formato de erro.
+// O login tem teste próprio em AcessoIT.
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(NotaController.class)
 @Import(AnoMesWebConfig.class)
 class NotaControllerTest {

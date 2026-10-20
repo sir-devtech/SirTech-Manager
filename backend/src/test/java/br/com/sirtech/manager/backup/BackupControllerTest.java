@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,6 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import br.com.sirtech.manager.backup.dto.BackupResponse;
 import br.com.sirtech.manager.shared.excecao.FalhaBackupException;
 
+// Filtros de segurança desligados: aqui o assunto é validação e formato de erro.
+// O login tem teste próprio em AcessoIT.
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(BackupController.class)
 class BackupControllerTest {
 

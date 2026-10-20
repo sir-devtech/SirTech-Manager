@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,8 +24,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * <p>A classe-mãe {@link ResponseEntityExceptionHandler} já trata os erros "do Spring"
  * (JSON malformado, método não suportado, validação...) devolvendo ProblemDetail.
  *
- * <p>Cinco respostas saem daqui: 400 (campo inválido), 404 (não encontrado),
- * 409 (dado repetido no banco), 422 (regra de negócio) e 500 (backup falhou).
+ * <p>Respostas que saem daqui: 400 (campo inválido), 401 (não entrou ou senha errada),
+ * 403 (sem permissão ou sem token CSRF), 404 (não encontrado), 409 (dado repetido no banco),
+ * 422 (regra de negócio), 429 (senha errada demais) e 500 (backup falhou).
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -88,6 +92,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConflitoException.class)
     ProblemDetail tratarConflito(ConflitoException ex) {
         return problema(HttpStatus.CONFLICT, "Conflito", ex.getMessage());
+    }
+
+    @ExceptionHandler(CredenciaisInvalidasException.class)
+    ProblemDetail tratarCredenciaisInvalidas(CredenciaisInvalidasException ex) {
+        return problema(HttpStatus.UNAUTHORIZED, "Não foi possível entrar", ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ProblemDetail tratarSemLogin(AuthenticationException ex) {
+        return problema(HttpStatus.UNAUTHORIZED, "Login necessário", "Entre no sistema para continuar");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ProblemDetail tratarAcessoNegado(AccessDeniedException ex) {
+        String detalhe = ex instanceof CsrfException
+                ? "A sessão desta página expirou. Recarregue a página e tente de novo."
+                : "Você não tem permissão para esta ação";
+        return problema(HttpStatus.FORBIDDEN, "Acesso negado", detalhe);
+    }
+
+    @ExceptionHandler(MuitasTentativasException.class)
+    ProblemDetail tratarMuitasTentativas(MuitasTentativasException ex) {
+        return problema(HttpStatus.TOO_MANY_REQUESTS, "Muitas tentativas", ex.getMessage());
     }
 
     private static ProblemDetail problema(HttpStatus status, String titulo, String detalhe) {

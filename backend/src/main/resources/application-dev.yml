@@ -2,3 +2,13 @@
 spring:
   flyway:
     locations: classpath:db/migration,classpath:db/seed
+
+# Login de demonstração, mostrado na tela de entrar e no README: serve só para avaliar o sistema.
+# O uso real não carrega este arquivo e exige SIRTECH_ADMIN_EMAIL/SENHA próprios.
+sirtech:
+  acesso:
+    demonstracao: true
+    inicial:
+      nome: Visitante da demonstração
+      email: demo@sirtech.example
+      senha: demo-sirtech-2026

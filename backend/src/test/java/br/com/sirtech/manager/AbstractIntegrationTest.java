@@ -2,6 +2,7 @@ package br.com.sirtech.manager;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
@@ -18,6 +19,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
         "sirtech.geracao.agendamento.habilitado=false",
         "sirtech.geracao.inicializacao.habilitado=false"
 })
+@Import(UsuarioDeTesteConfig.class)
 public abstract class AbstractIntegrationTest {
 
     @ServiceConnection
