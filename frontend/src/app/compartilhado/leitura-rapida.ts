@@ -17,6 +17,11 @@ import { Component, input } from '@angular/core';
       padding: 2px 0 2px 14px;
     }
 
+    :host ::ng-deep li strong {
+      color: var(--sir-text);
+      font-weight: 500;
+    }
+
     .rotulo {
       margin: 0;
       font-size: 11px;

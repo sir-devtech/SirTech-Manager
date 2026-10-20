@@ -32,7 +32,13 @@
     <article class="card despesas">
       <header><span>Despesas</span><mat-icon>receipt_long</mat-icon></header>
       <strong>{{ resumo.totalDespesas | currency: 'BRL' }}</strong>
-      <small>Servidor, Simples e outras do mês</small>
+      <small>
+        @if (resumo.receitaPrevista > 0) {
+          {{ resumo.totalDespesas / resumo.receitaPrevista | percent: '1.0-0' }} do previsto
+        } @else {
+          Tudo o que saiu no mês
+        }
+      </small>
     </article>
     <article class="card lucro" [class.negativo]="resumo.lucroRealizado < 0">
       <header>
