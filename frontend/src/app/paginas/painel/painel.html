@@ -1,13 +1,19 @@
+<div class="cabecalho-pagina">
 <div class="acoes">
-  <h1>Painel</h1>
   <div>
+    <h1>Painel</h1>
+    <p class="frase">O mês de trabalho: o que entra, o que sai e o que falta fazer.</p>
+  </div>
+  <div class="botoes">
     <button mat-stroked-button color="primary" (click)="gerar()">Gerar notas do mês</button>
-    <label class="arquivo">
-      Importar XML
-      <input type="file" accept=".xml,text/xml" (change)="importar($event)" hidden />
-    </label>
     <button mat-stroked-button (click)="backup()">Fazer backup</button>
   </div>
+</div>
+<app-leitura [resumo]="textoPendentes()">
+  <li><strong>Gerar notas do mês</strong> abre a previsão dos clientes ativos.</li>
+  <li>O XML da prefeitura entra em <strong>Notas</strong>.</li>
+  <li><strong>Fazer backup</strong> grava uma cópia do banco neste computador.</li>
+</app-leitura>
 </div>
 
 @if (resumo(); as resumo) {

@@ -1,6 +1,16 @@
-<div class="acoes">
-  <h1>Despesas</h1>
-  <button mat-stroked-button color="primary" (click)="abrir(null)">Nova despesa</button>
+<div class="cabecalho-pagina">
+  <div class="acoes">
+    <div>
+      <h1>Despesas</h1>
+      <p class="frase">O que saiu no mês.</p>
+    </div>
+    <button mat-stroked-button color="primary" (click)="abrir(null)">Nova despesa</button>
+  </div>
+  <app-leitura [resumo]="textoTotal()">
+    <li><strong>Nova despesa</strong> entra no mês escolhido no topo.</li>
+    <li>Marque recorrente para o que se repete, como o servidor.</li>
+    <li>Lance o Simples quando o boleto do dia 20 chegar. Ele não tem valor fixo.</li>
+  </app-leitura>
 </div>
 
 <div class="grade">

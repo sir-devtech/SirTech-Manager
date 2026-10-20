@@ -6,6 +6,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 
 import { Confirma } from '../../compartilhado/confirma';
+import { LeituraRapida } from '../../compartilhado/leitura-rapida';
 import { CompetenciaService } from '../../core/competencia.service';
 import { DespesaService } from '../../core/despesa.service';
 import { CATEGORIAS, Despesa, rotuloDe } from '../../core/modelos';
@@ -14,7 +15,7 @@ import { DespesaDialog } from './despesa-dialog';
 
 @Component({
   selector: 'app-despesas',
-  imports: [MatTableModule, MatButtonModule, MatPaginatorModule, CurrencyPipe],
+  imports: [MatTableModule, MatButtonModule, MatPaginatorModule, CurrencyPipe, LeituraRapida],
   templateUrl: './despesas.html',
   styleUrl: './despesas.scss',
 })
@@ -27,6 +28,13 @@ export class Despesas {
   readonly colunas = ['descricao', 'categoria', 'valor', 'recorrente', 'acoes'];
   readonly paginas = new Paginacao();
   readonly rotulo = (categoria: Despesa['categoria']) => rotuloDe(CATEGORIAS, categoria);
+
+  textoTotal(): string {
+    const quantidade = this.despesas().length;
+    const total = this.despesas().reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+    const valor = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total);
+    return quantidade === 1 ? `1 despesa, ${valor}.` : `${quantidade} despesas, ${valor}.`;
+  }
 
   constructor() {
     effect(() => {

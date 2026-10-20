@@ -4,9 +4,9 @@
 }
 
 .topo {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
   padding: 12px 28px;
   border-bottom: 1px solid var(--sir-line);
@@ -22,6 +22,7 @@
 
 nav {
   display: flex;
+  justify-content: center;
   gap: 8px;
   flex-wrap: wrap;
 }
@@ -29,7 +30,8 @@ nav {
 nav a {
   text-decoration: none;
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 8px 14px;
+  white-space: nowrap;
   color: var(--sir-muted);
   border: 1px solid transparent;
 }
@@ -41,9 +43,15 @@ nav a.ativa {
   font-weight: 500;
 }
 
+.canto {
+  justify-self: end;
+  width: 240px;
+}
+
 .mes {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
   color: var(--sir-muted);
 }
@@ -60,9 +68,17 @@ main {
   padding: 32px 28px 48px;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .topo {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr;
+  }
+
+  .canto {
+    width: auto;
+    justify-self: start;
+  }
+
+  nav {
+    justify-content: flex-start;
   }
 }

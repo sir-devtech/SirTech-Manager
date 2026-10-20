@@ -4,14 +4,19 @@
   </a>
   <nav>
     <a routerLink="/" routerLinkActive="ativa" [routerLinkActiveOptions]="{ exact: true }">Painel</a>
+    <a routerLink="/financeiro" routerLinkActive="ativa">Financeiro</a>
     <a routerLink="/clientes" routerLinkActive="ativa">Clientes</a>
     <a routerLink="/notas" routerLinkActive="ativa">Notas</a>
     <a routerLink="/despesas" routerLinkActive="ativa">Despesas</a>
   </nav>
-  <label class="mes">
-    Mês
-    <input type="month" [value]="competencia.valor()" (change)="trocarMes($event)" />
-  </label>
+  <div class="canto">
+    @if (!noFinanceiro()) {
+      <label class="mes">
+        Mês
+        <input type="month" [value]="competencia.valor()" (change)="trocarMes($event)" />
+      </label>
+    }
+  </div>
 </header>
 
 <main>

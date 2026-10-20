@@ -1,3 +1,20 @@
+.busca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: var(--sir-muted);
+}
+
+.busca input {
+  background: transparent;
+  color: var(--sir-text);
+  border: 1px solid var(--sir-line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  min-width: 240px;
+}
+
 .acoes {
   display: flex;
   justify-content: space-between;

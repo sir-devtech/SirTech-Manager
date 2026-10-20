@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 
 import { Confirma } from '../../compartilhado/confirma';
+import { LeituraRapida } from '../../compartilhado/leitura-rapida';
 import { ClienteService } from '../../core/cliente.service';
 import { CompetenciaService } from '../../core/competencia.service';
 import { Cliente, Nota, STATUS, StatusNota, rotuloDe } from '../../core/modelos';
@@ -27,6 +28,7 @@ import { PagarDialog } from './pagar-dialog';
     MatPaginatorModule,
     CurrencyPipe,
     DatePipe,
+    LeituraRapida,
   ],
   templateUrl: './notas.html',
   styleUrl: './notas.scss',
@@ -46,6 +48,11 @@ export class Notas {
   readonly colunas = ['cliente', 'numero', 'valor', 'vencimento', 'status', 'acoes'];
   readonly paginas = new Paginacao();
   readonly rotuloStatus = (valor: StatusNota) => rotuloDe(STATUS, valor);
+
+  textoPendentes(): string {
+    const quantidade = this.notas().filter((nota) => nota.status === 'PENDENTE').length;
+    return quantidade === 1 ? '1 nota pendente neste mês.' : `${quantidade} notas pendentes neste mês.`;
+  }
 
   constructor() {
     this.clientesApi.listar(true).subscribe((lista) => this.clientes.set(lista));

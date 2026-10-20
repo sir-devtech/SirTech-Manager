@@ -123,6 +123,7 @@ a {
   font-family: Consolas, ui-monospace, monospace;
   font-size: 13px;
   letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .grade .mat-mdc-paginator {
@@ -162,6 +163,32 @@ a {
   margin-left: 8px;
   color: #e2b340;
   font-size: 12px;
+}
+
+.cabecalho-pagina {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.frase {
+  margin: 6px 0 0;
+  max-width: 62ch;
+  color: var(--sir-muted);
+  line-height: 1.45;
+}
+
+.cabecalho-pagina .acoes {
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .cabecalho-pagina {
+    grid-template-columns: 1fr;
+  }
 }
 
 .vazio {

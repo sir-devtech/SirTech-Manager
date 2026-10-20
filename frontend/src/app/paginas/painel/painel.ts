@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { forkJoin } from 'rxjs';
 
+import { LeituraRapida } from '../../compartilhado/leitura-rapida';
 import { CompetenciaService } from '../../core/competencia.service';
 import { Nota, Resumo } from '../../core/modelos';
 import { NotaService } from '../../core/nota.service';
@@ -28,6 +29,7 @@ export interface MesDoGrafico {
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,
+    LeituraRapida,
     CurrencyPipe,
     DatePipe,
     PercentPipe,
@@ -86,6 +88,11 @@ export class Painel {
     return Math.round((hoje.getTime() - vencimento.getTime()) / 86_400_000);
   }
 
+  textoPendentes(): string {
+    const quantidade = this.resumo()?.notasPendentesEmissao ?? 0;
+    return quantidade === 1 ? '1 nota ainda por emitir.' : `${quantidade} notas ainda por emitir.`;
+  }
+
   gerar(): void {
     this.notasApi.gerar(this.competencia.valor()).subscribe((resultado) => {
       this.avisos.open(
@@ -101,18 +108,6 @@ export class Painel {
     this.resumoApi.backup().subscribe((arquivo) => {
       this.avisos.open(`Backup gravado: ${arquivo.arquivo}`, 'Fechar', { duration: 6000 });
     });
-  }
-
-  importar(evento: Event): void {
-    const arquivo = (evento.target as HTMLInputElement).files?.[0];
-    if (!arquivo) {
-      return;
-    }
-    this.notasApi.importar(arquivo).subscribe((nota) => {
-      this.avisos.open(`Nota ${nota.numero} importada.`, 'Fechar', { duration: 5000 });
-      this.carregar(this.competencia.valor());
-    });
-    (evento.target as HTMLInputElement).value = '';
   }
 
   private carregar(mes: string): void {

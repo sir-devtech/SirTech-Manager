@@ -5,6 +5,18 @@ export function somenteDigitos(valor: string): string {
   return valor.replace(/\D/g, '');
 }
 
+/** Mostra o documento com máscara. O valor guardado continua só com dígitos. */
+export function formatarDocumento(valor: string): string {
+  const digitos = somenteDigitos(valor);
+  if (digitos.length === 11) {
+    return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+  if (digitos.length === 14) {
+    return digitos.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  }
+  return valor;
+}
+
 /** Mesma conta do backend: módulo 11, e rejeita número com todos os dígitos iguais. */
 export function documentoValido(valor: string): boolean {
   const digitos = somenteDigitos(valor);
