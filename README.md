@@ -8,7 +8,7 @@
 
 Controle mensal de uma empresa pequena de software: clientes, notas fiscais, despesas e o resumo do mês. A nota é emitida no site da prefeitura; o sistema importa o XML. Roda local, num comando.
 
-Feito como sistema real de uso próprio e como estudo de Java. Os dados desta versão são fictícios.
+Sistema de uso próprio, publicado com dados fictícios.
 
 ![Demonstração: entrar, emitir e pagar uma nota, painel, financeiro e clientes](docs/screenshots/demo.gif)
 
@@ -21,7 +21,7 @@ Feito como sistema real de uso próprio e como estudo de Java. Os dados desta ve
 - **Quality:** 110 API tests on a real PostgreSQL (Testcontainers, 90.5% line coverage, minimum enforced in the build), 114 UI tests, 5 browser end-to-end scenarios with Playwright, and a CI that also scans dependencies for known vulnerabilities.
 - **Run it:** `docker compose up -d --build`, open <http://localhost:4200>, and use the demo login shown on the sign-in screen. All data is fictional.
 
-The documentation is in Portuguese. Every architectural decision has a short record in [`docs/adr`](docs/adr).
+The documentation is in Portuguese: [architecture](docs/arquitetura.md), [security](docs/seguranca.md), [tests](docs/testes.md), and a short record for every architectural decision in [`docs/adr`](docs/adr).
 
 ## Telas
 
@@ -120,13 +120,16 @@ O `mvn verify` e o `scripts/e2e.sh` precisam do Docker ligado. O `e2e.sh` usa ou
 
 ## Como foi construído
 
-Este projeto foi construído em dupla com IA (Claude Code e Cursor). Eu defini o problema, o escopo e as regras do negócio, conduzi o trabalho fase a fase e validei rodando o sistema. A IA escreveu a maior parte do código.
-
+Construído com apoio de IA (Claude Code e Cursor) como par de programação. O problema, o escopo e as regras do negócio vêm do uso real na minha empresa, e cada decisão técnica está registrada em um [ADR](docs/adr).
 
 ## Fora de escopo
 
-Emitir a nota no lugar da prefeitura, e-mail e deploy em nuvem.
+Emitir a nota no lugar da prefeitura, e-mail e deploy em nuvem. O que mudaria com mais usuários está em [limites e evolução](docs/limites.md).
 
 ## Documentação
 
-- [`docs/adr`](docs/adr): o porquê de cada decisão.
+- [Arquitetura](docs/arquitetura.md): as peças, o caminho de um pedido, as regras do domínio e os ambientes.
+- [Segurança](docs/seguranca.md): login, sessão, CSRF, dependências e o que mudaria fora da máquina local.
+- [Testes](docs/testes.md): a pirâmide, a cobertura, o teste de ponta a ponta e como os testes foram validados.
+- [Decisões (ADRs)](docs/adr): o porquê de cada escolha de arquitetura.
+- [Limites e evolução](docs/limites.md): o que foi deixado para quando o sistema crescer.

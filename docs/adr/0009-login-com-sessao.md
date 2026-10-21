@@ -26,4 +26,4 @@ A tela (Angular) e a API (Spring) são servidas pela **mesma origem**: o nginx e
 - A API inteira passa a exigir login, menos entrar, consultar a sessão e a dica da demonstração. O Swagger continua aberto para leitura.
 - Os testes de controller desligam os filtros (testam validação e formato de erro); os de integração entram como um usuário de teste; o `AcessoIT` prova o login de ponta a ponta, com CSRF e PostgreSQL real.
 - O bloqueio em memória zera quando a API reinicia. Com um processo e uma pessoa, é aceitável; com várias instâncias, iria para o banco ou para um cache compartilhado.
-- O cookie não é `Secure` porque roda em `http://localhost`. Fora da máquina, com HTTPS, passa a ser obrigatório (ver a documentação de segurança).
+- O cookie não é `Secure` porque roda em `http://localhost`. Fora da máquina, com HTTPS, passa a ser obrigatório (ver [segurança](../seguranca.md)).
