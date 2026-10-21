@@ -72,7 +72,7 @@ cd backend && ./mvnw verify
 cd frontend && npm ci && npx ng test --watch=false && npx ng build
 ```
 
-O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 33 testes com Vitest. Os dois rodam no GitHub Actions a cada push, junto com o build de produção. A cobertura da API é de 90,5% das linhas, com um mínimo travado no build (88%).
+O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 114 testes com Vitest, que cobrem as cinco páginas e o login. Os dois rodam no GitHub Actions a cada push, junto com o build de produção. A cobertura da API é de 90,5% das linhas, com um mínimo travado no build (88%).
 
 ## Fora de escopo
 
