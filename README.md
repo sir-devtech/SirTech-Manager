@@ -11,7 +11,7 @@ Feito como sistema real de uso próprio e como estudo de Java. Os dados desta ve
 - Angular 22 com Angular Material
 - Docker Compose, GitHub Actions
 - Spring Security: login com sessão, senha em BCrypt e proteção CSRF
-- Testes com JUnit 5, Mockito, Testcontainers e Vitest; cobertura medida com JaCoCo
+- Testes com JUnit 5, Mockito, Testcontainers e Vitest; cobertura medida com JaCoCo; OSV-Scanner e `npm audit` no CI
 
 ## Como rodar
 

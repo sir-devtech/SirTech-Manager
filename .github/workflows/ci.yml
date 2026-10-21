@@ -3,6 +3,8 @@ name: CI
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '0 9 * * 1'   # segunda-feira, 09:00 UTC: pega falha nova em biblioteca antiga
 
 jobs:
   backend:
@@ -60,7 +62,21 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
+      - name: Dependências da tela sem falha alta (npm audit)
+        run: npm audit --audit-level=high
       - name: Testes da tela (Vitest)
         run: npx ng test --watch=false
       - name: Build de produção
         run: npx ng build
+
+  dependencias:
+    name: Dependências (OSV-Scanner)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Lê o pom.xml e o package-lock.json e compara com o banco de falhas conhecidas (osv.dev).
+      # Falha o build se achar alguma. Roda também por agenda: uma falha nova pode aparecer
+      # semanas depois, sem nenhum commit no projeto.
+      - name: Procura falhas conhecidas nas bibliotecas
+        run: |
+          docker run --rm -v "$PWD:/src:ro" -w /src ghcr.io/google/osv-scanner:v2.7.0             scan source -L backend/pom.xml -L frontend/package-lock.json
