@@ -120,7 +120,7 @@ O `mvn verify` e o `scripts/e2e.sh` precisam do Docker ligado. O `e2e.sh` usa ou
 
 ## Como foi construído
 
-Construído com apoio de IA (Claude Code e Cursor) como par de programação. O problema, o escopo e as regras do negócio vêm do uso real na minha empresa, e cada decisão técnica está registrada em um [ADR](docs/adr).
+Construído com apoio de IA (Cursor, Copilot e Claude Code) como par de programação. O problema, o escopo e as regras do negócio vêm do uso real na minha empresa, e cada decisão técnica está registrada em um [ADR](docs/adr).
 
 ## Fora de escopo
 
