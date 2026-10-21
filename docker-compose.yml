@@ -4,10 +4,12 @@
 #
 # As portas escutam só em 127.0.0.1: o sistema abre neste computador e não aparece
 # para outras máquinas da mesma rede (Wi-Fi de café, coworking).
+# Os padrões são 4200 (tela), 8080 (API) e 5432 (banco). WEB_PORT, API_PORT e POSTGRES_PORT
+# trocam as portas, e o nome do projeto (-p) separa os volumes. É assim que o teste de ponta a
+# ponta (scripts/e2e.sh) sobe uma cópia descartável sem mexer na demonstração aberta.
 services:
   db:
     image: postgres:18
-    container_name: sirtech-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sirtech}
       POSTGRES_USER: ${POSTGRES_USER:-sirtech}
@@ -24,7 +26,6 @@ services:
 
   api:
     build: ./backend
-    container_name: sirtech-api
     depends_on:
       db:
         condition: service_healthy
@@ -36,17 +37,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-sirtech}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sirtech}
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:${API_PORT:-8080}:8080"
     volumes:
       - ./backups:/app/backups
 
   web:
     build: ./frontend
-    container_name: sirtech-web
     depends_on:
       - api
     ports:
-      - "127.0.0.1:4200:80"
+      - "127.0.0.1:${WEB_PORT:-4200}:80"
 
 volumes:
   pgdata-demo:

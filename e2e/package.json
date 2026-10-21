@@ -1,0 +1,12 @@
+{
+  "name": "sirtech-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Testes de ponta a ponta do SirTech Manager, no navegador, contra a demonstração.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

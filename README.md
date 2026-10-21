@@ -11,7 +11,7 @@ Feito como sistema real de uso próprio e como estudo de Java. Os dados desta ve
 - Angular 22 com Angular Material
 - Docker Compose, GitHub Actions
 - Spring Security: login com sessão, senha em BCrypt e proteção CSRF
-- Testes com JUnit 5, Mockito, Testcontainers e Vitest; cobertura medida com JaCoCo; OSV-Scanner e `npm audit` no CI
+- Testes com JUnit 5, Mockito, Testcontainers, Vitest e Playwright; cobertura medida com JaCoCo; OSV-Scanner e `npm audit` no CI
 
 ## Como rodar
 
@@ -70,9 +70,10 @@ O porquê de cada uma está em [`docs/adr`](docs/adr).
 ```bash
 cd backend && ./mvnw verify
 cd frontend && npm ci && npx ng test --watch=false && npx ng build
+bash scripts/e2e.sh   # sobe uma cópia descartável e abre um navegador de verdade
 ```
 
-O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 114 testes com Vitest, que cobrem as cinco páginas e o login. Os dois rodam no GitHub Actions a cada push, junto com o build de produção. A cobertura da API é de 90,5% das linhas, com um mínimo travado no build (88%).
+O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 114 testes com Vitest, que cobrem as cinco páginas e o login. O `scripts/e2e.sh` roda 5 cenários no navegador (Playwright) contra o sistema inteiro, sem tocar na demonstração aberta. Os dois rodam no GitHub Actions a cada push, junto com o build de produção. A cobertura da API é de 90,5% das linhas, com um mínimo travado no build (88%).
 
 ## Fora de escopo
 

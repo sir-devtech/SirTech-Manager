@@ -79,4 +79,26 @@ jobs:
       # semanas depois, sem nenhum commit no projeto.
       - name: Procura falhas conhecidas nas bibliotecas
         run: |
-          docker run --rm -v "$PWD:/src:ro" -w /src ghcr.io/google/osv-scanner:v2.7.0             scan source -L backend/pom.xml -L frontend/package-lock.json
+          docker run --rm -v "$PWD:/src:ro" -w /src ghcr.io/google/osv-scanner:v2.7.0             scan source -L backend/pom.xml -L frontend/package-lock.json -L e2e/package-lock.json
+
+  e2e:
+    name: Ponta a ponta (Playwright)
+    runs-on: ubuntu-latest
+    # Só roda depois que a API e a tela passaram: não gasta minutos subindo um sistema quebrado.
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v5
+      # Sobe o sistema inteiro em Docker (banco, API e tela), abre um navegador de verdade, percorre
+      # o fluxo principal e derruba tudo. O mesmo comando roda no computador do desenvolvedor.
+      - name: Fluxo principal no navegador
+        run: bash scripts/e2e.sh
+      # Em caso de falha, o vídeo e o trace mostram o que o navegador viu.
+      - name: Provas da falha (vídeo, trace e relatório)
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: e2e-falha
+          path: |
+            e2e/resultados
+            e2e/relatorio
+          if-no-files-found: ignore
