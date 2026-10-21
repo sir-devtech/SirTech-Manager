@@ -20,6 +20,31 @@ jobs:
           cache: maven
       - name: Testa com PostgreSQL de verdade (Testcontainers)
         run: ./mvnw -B verify
+      - name: Cobertura no resumo do job
+        if: always()
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import csv, os
+          arquivo = 'target/site/jacoco-merged/jacoco.csv'
+          if not os.path.exists(arquivo):
+              print('Relatório de cobertura não gerado.')
+          else:
+              linhas = list(csv.DictReader(open(arquivo, encoding='utf-8')))
+              def pct(m, c):
+                  cob = sum(int(r[c]) for r in linhas); tot = cob + sum(int(r[m]) for r in linhas)
+                  return f'{100 * cob / tot:.1f}%' if tot else '-'
+              print('### Cobertura da API (testes unitários + integração)')
+              print('| Linhas | Ramos |')
+              print('|---|---|')
+              print(f"| {pct('LINE_MISSED', 'LINE_COVERED')} | {pct('BRANCH_MISSED', 'BRANCH_COVERED')} |")
+          PY
+      - name: Relatório de cobertura (HTML)
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: cobertura-api
+          path: backend/target/site/jacoco-merged
+          if-no-files-found: ignore
 
   frontend:
     name: Tela (testes e build)

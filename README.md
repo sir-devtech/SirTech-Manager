@@ -11,7 +11,7 @@ Feito como sistema real de uso próprio e como estudo de Java. Os dados desta ve
 - Angular 22 com Angular Material
 - Docker Compose, GitHub Actions
 - Spring Security: login com sessão, senha em BCrypt e proteção CSRF
-- Testes com JUnit 5, Mockito, Testcontainers e Vitest
+- Testes com JUnit 5, Mockito, Testcontainers e Vitest; cobertura medida com JaCoCo
 
 ## Como rodar
 
@@ -72,7 +72,7 @@ cd backend && ./mvnw verify
 cd frontend && npm ci && npx ng test --watch=false && npx ng build
 ```
 
-O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 33 testes com Vitest. Os dois rodam no GitHub Actions a cada push, junto com o build de produção.
+O `mvn verify` roda 110 testes, os de integração num PostgreSQL de teste pelo Docker. A tela tem 33 testes com Vitest. Os dois rodam no GitHub Actions a cada push, junto com o build de produção. A cobertura da API é de 90,5% das linhas, com um mínimo travado no build (88%).
 
 ## Fora de escopo
 
